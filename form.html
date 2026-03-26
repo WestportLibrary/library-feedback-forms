@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Manga Recommendation — Westport Library</title>
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --red: #ee2f53;
+    --purple: #5c2d91;
+    --charcoal: #474C55;
+    --gray-bg: #d5d9e3;
+    --white: #ffffff;
+    --text-muted: #767b85;
+    --border: #c8cdd6;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  html, body {
+    min-height: 100%;
+    background: var(--gray-bg);
+    font-family: 'Raleway', sans-serif;
+    color: var(--charcoal);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .header {
+    background: var(--red);
+    padding: 28px 24px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header::after {
+    content: '';
+    position: absolute;
+    top: -20px;
+    right: 72px;
+    bottom: -20px;
+    width: 36px;
+    background: #111;
+    transform: rotate(-12deg);
+    transform-origin: top center;
+  }
+
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    right: 16px;
+    bottom: -20px;
+    width: 32px;
+    background: var(--red);
+    transform: rotate(-12deg);
+    transform-origin: top center;
+    z-index: 1;
+  }
+
+  .header-eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.65);
+    margin-bottom: 8px;
+  }
+
+  .header-title {
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1.0;
+    color: var(--white);
+    max-width: 260px;
+  }
+
+  .header-title span {
+    color: rgba(255,255,255,0.55);
+  }
+
+  .form-body {
+    flex: 1;
+    padding: 28px 20px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    max-width: 560px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    opacity: 0;
+    transform: translateY(12px);
+    animation: fadeUp 0.4s ease forwards;
+  }
+
+  .field:nth-child(1) { animation-delay: 0.05s; }
+  .field:nth-child(2) { animation-delay: 0.12s; }
+  .field:nth-child(3) { animation-delay: 0.19s; }
+  .field:nth-child(4) { animation-delay: 0.26s; }
+  .field:nth-child(5) { animation-delay: 0.33s; }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  label {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--charcoal);
+    letter-spacing: 0.02em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .required-badge {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--red);
+  }
+
+  .optional-badge {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  input[type="text"],
+  input[type="email"],
+  textarea {
+    width: 100%;
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    font-family: 'Raleway', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--charcoal);
+    outline: none;
+    transition: border-color 0.15s;
+    -webkit-appearance: none;
+  }
+
+  input[type="text"]:focus,
+  input[type="email"]:focus,
+  textarea:focus {
+    border-color: var(--purple);
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--border);
+    font-weight: 400;
+  }
+
+  textarea {
+    resize: none;
+    min-height: 100px;
+    line-height: 1.5;
+  }
+
+  .helper {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  .pill-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .pill-group-inner {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .pill-group input[type="radio"] {
+    display: none;
+  }
+
+  .pill-group-inner label {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0;
+    color: var(--charcoal);
+    background: var(--white);
+    border: 2.5px solid var(--charcoal);
+    border-radius: 100px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+  }
+
+  .pill-group input[type="radio"]:checked + label {
+    background: var(--purple);
+    border-color: var(--purple);
+    color: var(--white);
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    opacity: 0.6;
+  }
+
+  .submit-btn {
+    width: 100%;
+    background: var(--red);
+    color: var(--white);
+    border: none;
+    border-radius: var(--radius);
+    padding: 18px;
+    font-family: 'Raleway', sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+    -webkit-tap-highlight-color: transparent;
+    opacity: 0;
+    animation: fadeUp 0.4s ease 0.4s forwards;
+  }
+
+  .submit-btn:active {
+    transform: scale(0.98);
+    opacity: 0.88;
+  }
+
+  .submit-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .footer-text {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding-bottom: 8px;
+    opacity: 0;
+    animation: fadeUp 0.4s ease 0.45s forwards;
+  }
+
+  /* Success screen */
+  .success-screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 40px 24px;
+    text-align: center;
+    background: var(--gray-bg);
+  }
+
+  .success-icon {
+    width: 64px;
+    height: 64px;
+    background: var(--purple);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+  }
+
+  .success-icon svg {
+    width: 28px;
+    height: 28px;
+    stroke: white;
+    fill: none;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .success-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--charcoal);
+    margin-bottom: 12px;
+    line-height: 1.1;
+  }
+
+  .success-title span { color: var(--purple); }
+
+  .success-body {
+    font-size: 15px;
+    color: var(--text-muted);
+    font-weight: 600;
+    line-height: 1.6;
+    max-width: 280px;
+  }
+
+  .success-library {
+    margin-top: 40px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--border);
+  }
+
+  .wl-link { color: inherit; text-decoration: none; }
+  .wl-link:hover { text-decoration: underline; }
+
+  /* Error state */
+  .error-msg {
+    font-size: 12px;
+    color: var(--red);
+    font-weight: 600;
+    display: none;
+  }
+
+  input.invalid, textarea.invalid {
+    border-color: var(--red);
+  }
+  .success-another-link {
+    margin-top: 16px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--charcoal);
+    text-decoration: none;
+    border-bottom: 2px solid var(--charcoal);
+    padding-bottom: 2px;
+  }
+
+  .success-site-link {
+    margin-top: 32px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--red);
+    text-decoration: none;
+    border-bottom: 2px solid var(--red);
+    padding-bottom: 2px;
+  }
+</style>
+</head>
+<body>
+
+<div class="page" id="formPage">
+  <div class="header">
+    <div class="header-eyebrow"><a href="https://westportlibrary.org" target="_blank" class="wl-link">Westport Library</a></div>
+    <div class="header-title">What manga<br><span>deserves more</span><br>readers?</div>
+  </div>
+
+  <form class="form-body" id="mainForm" novalidate>
+
+    <div class="field">
+      <label for="title">Manga title or series <span class="required-badge">Required</span></label>
+      <input type="text" id="title" name="title" placeholder="e.g. Berserk, Dungeon Meshi…" autocomplete="off">
+      <span class="error-msg" id="titleError">Please enter a title.</span>
+    </div>
+
+    <div class="field">
+      <label for="why">Why do you recommend it? <span class="optional-badge">Optional</span></label>
+      <textarea id="why" name="why" placeholder="What's the buzz about it?"></textarea>
+    </div>
+
+    <div class="field">
+      <label for="email">Your email <span class="optional-badge">Optional</span></label>
+      <input type="email" id="email" name="email" placeholder="For possible follow-up only.">
+      
+    </div>
+
+    <button type="submit" class="submit-btn" id="submitBtn">Send recommendation</button>
+  </form>
+</div>
+
+<div class="success-screen" id="successScreen">
+  <div class="success-icon">
+    <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+  </div>
+  <div class="success-title">Thanks for the<br><span>recommendation!</span></div>
+  <div class="success-body">We'll take a look and use your suggestion to help build the collection.</div>
+  <a href="#" onclick="document.getElementById('successScreen').style.display='none'; document.getElementById('formPage').style.display='flex'; document.getElementById('mainForm').reset(); document.getElementById('submitBtn').disabled=false; document.getElementById('submitBtn').textContent='Send recommendation'; return false;" class="success-another-link">Submit another recommendation →</a>
+  <a href="http://catalog.westportlibrary.org/polaris/view.aspx?keyword=manga" target="_blank" class="success-site-link">Browse our manga collection →</a>
+</div>
+
+<script>
+  const APPS_SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
+
+  const form = document.getElementById('mainForm');
+  const submitBtn = document.getElementById('submitBtn');
+  const titleInput = document.getElementById('title');
+  const titleError = document.getElementById('titleError');
+
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    titleInput.classList.remove('invalid');
+    titleError.style.display = 'none';
+
+    if (!titleInput.value.trim()) {
+      titleInput.classList.add('invalid');
+      titleError.style.display = 'block';
+      titleInput.focus();
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending…';
+
+    const payload = {
+      form_type: 'manga',
+      title: titleInput.value.trim(),
+      why: document.getElementById('why').value.trim(),
+      email: document.getElementById('email').value.trim(),
+      incomplete_volumes: document.querySelector('input[name="incomplete_volumes"]:checked')?.value || '',
+      start_volume: document.querySelector('input[name="start_volume"]:checked')?.value || '',
+      submitted_at: new Date().toISOString()
+    };
+
+    try {
+      await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch(err) {
+      // no-cors swallows the response — treat as success
+    }
+
+    document.getElementById('formPage').style.display = 'none';
+    const s = document.getElementById('successScreen');
+    s.style.display = 'flex';
+  });
+</script>
+</body>
+</html>
